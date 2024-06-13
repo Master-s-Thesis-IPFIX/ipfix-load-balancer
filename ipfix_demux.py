@@ -1,3 +1,4 @@
+import argparse
 import time
 from typing import Optional
 
@@ -6,6 +7,11 @@ import pyfixbuf.cert
 
 from information_elements import export_ie
 
+parser = argparse.ArgumentParser()
+parser.add_argument('n', type=int)
+parser.add_argument('hostname')
+
+args = parser.parse_args()
 
 class MalFix:
     def __init__(self, infomodel: pyfixbuf.InfoModel, export_template: pyfixbuf.Template, port: str):
@@ -21,7 +27,7 @@ class MalFix:
         self._export_session = pyfixbuf.Session(self._infomodel)
         export_template_id = self._export_session.add_template(self._export_template)
         exporter = pyfixbuf.Exporter()
-        exporter.init_net("127.0.0.1", "tcp", self._port)
+        exporter.init_net(args.hostname, "tcp", self._port)
         self._export_buffer = pyfixbuf.Buffer()
         self._export_buffer.init_export(self._export_session, exporter)
         self._export_buffer.set_internal_template(export_template_id)
@@ -61,7 +67,7 @@ class MalFixDeMux:
         self._export_rec["sourceTransportPort"] = 3212
         self._export_rec["protocolIdentifier"] = 17
 
-        for i in range(0, 8):
+        for i in range(0, args.n):
             malfix = MalFix(infomodel, export_template, f"{18000+i}")
             malfix.setup_export()
             self._malfixs.append(malfix)
