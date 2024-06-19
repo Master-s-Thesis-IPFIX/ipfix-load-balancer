@@ -13,6 +13,7 @@ parser.add_argument('hostname')
 
 args = parser.parse_args()
 
+
 class MalFix:
     def __init__(self, infomodel: pyfixbuf.InfoModel, export_template: pyfixbuf.Template, port: str):
         self._export_session: Optional[pyfixbuf.Session] = None
@@ -68,7 +69,7 @@ class MalFixDeMux:
         self._export_rec["protocolIdentifier"] = 17
 
         for i in range(0, args.n):
-            malfix = MalFix(infomodel, export_template, f"{18000+i}")
+            malfix = MalFix(infomodel, export_template, f"{18000 + i}")
             malfix.setup_export()
             self._malfixs.append(malfix)
 
@@ -90,7 +91,7 @@ class MalFixDeMux:
                 if elapsed_time >= 10.0:  # Report packets/sec every second
                     packets_per_sec = delta_packet_count / elapsed_time
                     total_packet_count += delta_packet_count
-                    print(f"Packets/sec: {round(packets_per_sec)}, total: {total_packet_count}")
+                    print(f"records/sec: {round(packets_per_sec)}, total: {total_packet_count}")
                     delta_packet_count = 0
                     last_report_time = current_time
 
