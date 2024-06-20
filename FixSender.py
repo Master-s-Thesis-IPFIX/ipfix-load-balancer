@@ -32,5 +32,8 @@ class FixSender:
         self._session.export_templates()
 
     def send_ipfix(self, record: pyfixbuf.Record):
-        self._record.copy(record)
-        self._buffer.append(self._record)
+        if not self.config['benchmark']:
+            self._record.copy(record)
+        else:
+            self._record = record
+        self._buffer.append(record)
