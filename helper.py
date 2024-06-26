@@ -43,3 +43,6 @@ class Config(TypedDict):
     listen_port: int
     listen_protocol: str
     benchmark: bool
+    max_flows: int
+    malicious_percentage: int
+    malicious_types: list[str]

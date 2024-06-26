@@ -15,6 +15,11 @@ parser.add_argument('--listen_host', type=str, help='The host to listen on', def
 parser.add_argument('--listen_port', type=int, help='The port to listen on', default="1337")
 parser.add_argument('--listen_protocol', type=str, help='The protocol to listen on', default="tcp")
 parser.add_argument('--benchmark', action='store_true', help='Flag to enable benchmarking')
+parser.add_argument('--max_flows', type=int, help='Max flow to send', default=10000000)
+parser.add_argument('--malicious_percentage', type=int, help='Percentage of malicious flows, only %10=0', default=50)
+parser.add_argument('--malicious_types', type=lambda s: s.split(','), help='Comma-separated list of malicious flow '
+                                                                           'types which should be used',
+                    default=["dns", "ip"])
 
 # Parse the arguments
 args = parser.parse_args()
@@ -28,7 +33,10 @@ config: Config = {
     'listen_host': args.listen_host,
     'listen_port': args.listen_port,
     'listen_protocol': args.listen_protocol,
-    'benchmark': args.benchmark
+    'benchmark': args.benchmark,
+    'max_flows': args.max_flows,
+    'malicious_percentage': args.malicious_percentage,
+    'malicious_types': args.malicious_types
 }
 
 # Print the configuration
@@ -41,6 +49,10 @@ print(f"  MalFix Protocol: {config['malfix_protocol']}")
 print(f"  Benchmarking: {config['benchmark']}")
 print(f"Listening on {config['listen_host']}:{config['listen_port']}/{config['listen_protocol']} for IPFIX!") if not \
     config['benchmark'] else print("Benchmarking!")
+print(
+    f"  Bench params: Flows: {config['max_flows']}, "
+    f"malicious percentage: {config['malicious_percentage']}, "
+    f"types: {config['malicious_types']}")
 
 # Initialize FixDemux with the appropriate arguments
 demux = FixDemux(import_ie, export_ie, config)
