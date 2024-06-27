@@ -1,3 +1,4 @@
+import random
 from typing import TypedDict, Optional
 
 
@@ -69,7 +70,7 @@ malicious_dns: list[IPFIXData] = [
         "protocolIdentifier": 17
     },
 ]
-# random.shuffle(malicious_dns)
+random.shuffle(malicious_dns)
 
 malicious_ip: list[IPFIXData] = [
     # apt_bitter
@@ -133,7 +134,7 @@ malicious_ip: list[IPFIXData] = [
         "protocolIdentifier": 6
     },
 ]
-# random.shuffle(malicious_ip)
+random.shuffle(malicious_ip)
 
 normal: list[IPFIXData] = [
     {
@@ -247,4 +248,4 @@ normal: list[IPFIXData] = [
         "protocolIdentifier": 17
     }
 ]
-# random.shuffle(normal)
+random.shuffle(normal)
