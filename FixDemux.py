@@ -82,6 +82,7 @@ class FixDemux:
             self._demux(random.choice(self._benchmark_records))
             if (self.config['max_flows'] != 0 and
                     self._total_packet_count + self._delta_packet_count >= self.config['max_flows']):
+                [sender.emit() for sender in self._sender]
                 print(f"{self._total_packet_count + self._delta_packet_count} flows sent, exiting!")
                 break
 

@@ -37,4 +37,6 @@ class FixSender:
         else:
             self._record = record
         self._buffer.append(record)
+
+    def emit(self):
         self._buffer.emit()
