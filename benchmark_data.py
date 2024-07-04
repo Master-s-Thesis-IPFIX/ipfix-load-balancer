@@ -89,13 +89,13 @@ malicious_ip: list[IPFIXData] = [
     {
         "dnsName": None,
         "dnsType": None,
-        "sourceIPv4Address": "3.6.115.182",
-        "destinationIPv4Address": "115.159.205.208",
+        "sourceIPv4Address": "207.148.5.58",
+        "destinationIPv4Address": "45.95.146.93",
         "sourceIPv6Address": None,
         "destinationIPv6Address": None,
-        "destinationTransportPort": 14904,
-        "sourceTransportPort": 4313,
-        "protocolIdentifier": 17
+        "destinationTransportPort": 82,
+        "sourceTransportPort": 82,
+        "protocolIdentifier": 6
     },
     # android_gplayed
     {
@@ -113,13 +113,13 @@ malicious_ip: list[IPFIXData] = [
     {
         "dnsName": None,
         "dnsType": None,
-        "sourceIPv4Address": "173.212.254.192",
-        "destinationIPv4Address": "116.204.171.29",
+        "sourceIPv4Address": "106.52.103.154",
+        "destinationIPv4Address": "185.132.125.193",
         "sourceIPv6Address": None,
         "destinationIPv6Address": None,
-        "destinationTransportPort": 52993,
-        "sourceTransportPort": 31337,
-        "protocolIdentifier": 17
+        "destinationTransportPort": 81,
+        "sourceTransportPort": 81,
+        "protocolIdentifier": 6
     },
     # woof
     {
