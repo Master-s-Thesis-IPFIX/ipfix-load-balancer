@@ -1,4 +1,5 @@
 import random
+import statistics
 import time
 from typing import Optional
 
@@ -28,6 +29,8 @@ class FixDemux:
         self._delta_packet_count = 0
         self._total_packet_count = 0
         self.config = config
+
+        self._packets_per_second: list[float] = []
 
         self._malicious_benchmark_data = (
             [item for pair in zip(benchmark_data.malicious_dns, benchmark_data.malicious_ip) for item in pair]
@@ -69,8 +72,9 @@ class FixDemux:
         elapsed_time = current_time - self._last_report_time
         if elapsed_time >= 10.0:  # Report packets/sec every second
             packets_per_sec = self._delta_packet_count / elapsed_time
+            self._packets_per_second.append(packets_per_sec)
             self._total_packet_count += self._delta_packet_count
-            print(f"records/sec: {round(packets_per_sec)}, total: {self._total_packet_count}")
+            print(f"flows/sec: {round(packets_per_sec)}, total: {self._total_packet_count}")
             self._delta_packet_count = 0
             self._last_report_time = current_time
 
@@ -83,7 +87,11 @@ class FixDemux:
             if (self.config['max_flows'] != 0 and
                     self._total_packet_count + self._delta_packet_count >= self.config['max_flows']):
                 [sender.emit() for sender in self._sender]
+
+                # First one is always off
+                self._packets_per_second.pop(0)
                 print(f"{self._total_packet_count + self._delta_packet_count} flows sent, exiting!")
+                print(f"Average flows per second: {round(statistics.fmean(self._packets_per_second))}")
                 break
 
     def _create_benchmark_records(self, infomodel, export_template):
