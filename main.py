@@ -20,6 +20,7 @@ parser.add_argument('--malicious_percentage', type=int, help='Percentage of mali
 parser.add_argument('--malicious_types', type=lambda s: s.split(','), help='Comma-separated list of malicious flow '
                                                                            'types which should be used',
                     default=["dns", "ip"])
+parser.add_argument('--minimal_log', action='store_true', help='Log minimal info (for multiple benchmarking)')
 
 # Parse the arguments
 args = parser.parse_args()
@@ -36,23 +37,25 @@ config: Config = {
     'benchmark': args.benchmark,
     'max_flows': args.max_flows,
     'malicious_percentage': args.malicious_percentage,
-    'malicious_types': args.malicious_types
+    'malicious_types': args.malicious_types,
+    'minimal_log': args.minimal_log
 }
 
 # Print the configuration
-print("Configuration:")
-print(f"  MalFix Instances: {config['malfix_instances']}")
-print(f"  MalFix Hostname: {config['malfix_host']}")
-print(
-    f"  MalFix Port(s): {config['malfix_base_port']} ... {config['malfix_base_port'] + config['malfix_instances'] - 1}")
-print(f"  MalFix Protocol: {config['malfix_protocol']}")
-print(f"  Benchmarking: {config['benchmark']}")
-print(f"Listening on {config['listen_host']}:{config['listen_port']}/{config['listen_protocol']} for IPFIX!") if not \
-    config['benchmark'] else print("Benchmarking!")
-print(
-    f"  Bench params: Flows: {config['max_flows']}, "
-    f"malicious percentage: {config['malicious_percentage']}, "
-    f"types: {config['malicious_types']}")
+if not config['minimal_log']:
+    print("Configuration:")
+    print(f"  MalFix Instances: {config['malfix_instances']}")
+    print(f"  MalFix Hostname: {config['malfix_host']}")
+    print(
+        f"  MalFix Port(s): {config['malfix_base_port']} ... {config['malfix_base_port'] + config['malfix_instances'] - 1}")
+    print(f"  MalFix Protocol: {config['malfix_protocol']}")
+    print(f"  Benchmarking: {config['benchmark']}")
+    print(f"Listening on {config['listen_host']}:{config['listen_port']}/{config['listen_protocol']} for IPFIX!") if not \
+        config['benchmark'] else print("Benchmarking!")
+    print(
+        f"  Bench params: Flows: {config['max_flows']}, "
+        f"malicious percentage: {config['malicious_percentage']}, "
+        f"types: {config['malicious_types']}")
 
 # Initialize FixDemux with the appropriate arguments
 demux = FixDemux(import_ie, export_ie, config)

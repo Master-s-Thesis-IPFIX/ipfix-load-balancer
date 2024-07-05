@@ -46,3 +46,4 @@ class Config(TypedDict):
     max_flows: int
     malicious_percentage: int
     malicious_types: list[str]
+    minimal_log: bool

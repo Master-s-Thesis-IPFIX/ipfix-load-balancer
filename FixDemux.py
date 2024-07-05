@@ -74,7 +74,8 @@ class FixDemux:
             packets_per_sec = self._delta_packet_count / elapsed_time
             self._packets_per_second.append(packets_per_sec)
             self._total_packet_count += self._delta_packet_count
-            print(f"flows/sec: {round(packets_per_sec)}, total: {self._total_packet_count}")
+            if not self.config['minimal_log']:
+                print(f"flows/sec: {round(packets_per_sec)}, total: {self._total_packet_count}")
             self._delta_packet_count = 0
             self._last_report_time = current_time
 
@@ -88,10 +89,21 @@ class FixDemux:
                     self._total_packet_count + self._delta_packet_count >= self.config['max_flows']):
                 [sender.emit() for sender in self._sender]
 
-                # First one is always off
-                self._packets_per_second.pop(0)
-                print(f"{self._total_packet_count + self._delta_packet_count} flows sent, exiting!")
-                print(f"Average flows per second: {round(statistics.fmean(self._packets_per_second))}")
+                if self.config['minimal_log']:
+                    print(
+                        f"Flows: {self.config['max_flows']}, "
+                        f"Types: {self.config['malicious_types']}, "
+                        f"Percentage: {self.config['malicious_percentage']}, "
+                        f"Instances: {self.config['malfix_instances']}, "
+                        f"Proto: {self.config['malfix_protocol']}"
+                    )
+                if len(self._packets_per_second) > 1:
+                    # First one is always off
+                    self._packets_per_second.pop()
+                    print(f"f/s: {round(statistics.fmean(self._packets_per_second))}, "
+                          f"Flows: {self._total_packet_count + self._delta_packet_count}\n")
+                else:
+                    print(f"Flows: {self._total_packet_count + self._delta_packet_count}\n")
                 break
 
     def _create_benchmark_records(self, infomodel, export_template):
