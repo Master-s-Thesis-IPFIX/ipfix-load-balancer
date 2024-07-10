@@ -47,3 +47,4 @@ class Config(TypedDict):
     malicious_percentage: int
     malicious_types: list[str]
     minimal_log: bool
+    flows_per_second: int

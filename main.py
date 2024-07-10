@@ -1,4 +1,7 @@
 import argparse
+import time
+from ctypes import c_bool
+from multiprocessing import Value, Process
 
 from FixDemux import FixDemux
 from helper import Config
@@ -21,6 +24,7 @@ parser.add_argument('--malicious_types', type=lambda s: s.split(','), help='Comm
                                                                            'types which should be used',
                     default=["dns", "ip"])
 parser.add_argument('--minimal_log', action='store_true', help='Log minimal info (for multiple benchmarking)')
+parser.add_argument('--flows_per_second', type=int, help='Flows per second, default max', default=0)
 
 # Parse the arguments
 args = parser.parse_args()
@@ -38,7 +42,8 @@ config: Config = {
     'max_flows': args.max_flows,
     'malicious_percentage': args.malicious_percentage,
     'malicious_types': args.malicious_types,
-    'minimal_log': args.minimal_log
+    'minimal_log': args.minimal_log,
+    'flows_per_second': args.flows_per_second
 }
 
 # Print the configuration
@@ -55,9 +60,40 @@ if not config['minimal_log']:
     print(
         f"  Bench params: Flows: {config['max_flows']}, "
         f"malicious percentage: {config['malicious_percentage']}, "
-        f"types: {config['malicious_types']}")
+        f"types: {config['malicious_types']}, "
+        f"f/s: {config['flows_per_second'] if config['flows_per_second'] > 0 else 'max'}")
 
 # Initialize FixDemux with the appropriate arguments
 demux = FixDemux(import_ie, export_ie, config)
 demux.setup()
-demux.run_benchmark() if config['benchmark'] else demux.run()
+
+
+# Function to run the benchmark repeatedly
+def run_benchmark_repeatedly(flows_per_second, stop_event):
+    interval = 1.0 / flows_per_second
+    next_run = time.perf_counter()
+
+    while not stop_event.value:
+        demux.run_benchmark()
+        next_run += interval
+        sleep_time = next_run - time.perf_counter()
+        if sleep_time > 0:
+            time.sleep(sleep_time)
+        else:
+            next_run = time.perf_counter()  # Reset next_run if we're behind schedule
+
+
+# Run the appropriate method based on the configuration
+if config['benchmark'] and config['flows_per_second'] > 0:
+    stop_event = Value(c_bool, False)
+    process = Process(target=run_benchmark_repeatedly, args=(config['flows_per_second'], stop_event))
+    process.start()
+    try:
+        while True:
+            time.sleep(1)  # Keep the main thread alive
+    except KeyboardInterrupt:
+        stop_event.value = True
+        process.join()
+        print("Benchmarking stopped.")
+else:
+    demux.run_benchmark() if config['benchmark'] else demux.run()

@@ -70,7 +70,7 @@ class FixDemux:
         self._delta_packet_count += 1
         current_time = time.time()
         elapsed_time = current_time - self._last_report_time
-        if elapsed_time >= 10.0:  # Report packets/sec every second
+        if elapsed_time >= 2.00:  # Report packets/sec every second
             packets_per_sec = self._delta_packet_count / elapsed_time
             self._packets_per_second.append(packets_per_sec)
             self._total_packet_count += self._delta_packet_count
@@ -83,28 +83,27 @@ class FixDemux:
         self._receiver.listen(self._demux)
 
     def run_benchmark(self):
-        while True:
-            self._demux(random.choice(self._benchmark_records))
-            if (self.config['max_flows'] != 0 and
-                    self._total_packet_count + self._delta_packet_count >= self.config['max_flows']):
-                [sender.emit() for sender in self._sender]
+        self._demux(random.choice(self._benchmark_records))
+        if (self.config['max_flows'] != 0 and
+                self._total_packet_count + self._delta_packet_count >= self.config['max_flows']):
+            [sender.emit() for sender in self._sender]
 
-                if self.config['minimal_log']:
-                    print(
-                        f"Flows: {self.config['max_flows']}, "
-                        f"Types: {self.config['malicious_types']}, "
-                        f"Percentage: {self.config['malicious_percentage']}, "
-                        f"Instances: {self.config['malfix_instances']}, "
-                        f"Proto: {self.config['malfix_protocol']}"
-                    )
-                if len(self._packets_per_second) > 1:
-                    # First one is always off
-                    self._packets_per_second.pop()
-                    print(f"f/s: {round(statistics.fmean(self._packets_per_second))}, "
-                          f"Flows: {self._total_packet_count + self._delta_packet_count}\n")
-                else:
-                    print(f"Flows: {self._total_packet_count + self._delta_packet_count}\n")
-                break
+            if self.config['minimal_log']:
+                print(
+                    f"Flows: {self.config['max_flows']}, "
+                    f"Types: {self.config['malicious_types']}, "
+                    f"Percentage: {self.config['malicious_percentage']}, "
+                    f"Instances: {self.config['malfix_instances']}, "
+                    f"Proto: {self.config['malfix_protocol']}"
+                )
+            if len(self._packets_per_second) > 1:
+                # First one is always off
+                self._packets_per_second.pop()
+                print(f"f/s: {round(statistics.fmean(self._packets_per_second))}, "
+                      f"Flows: {self._total_packet_count + self._delta_packet_count}\n")
+            else:
+                print(f"Flows: {self._total_packet_count + self._delta_packet_count}\n")
+            exit(0)
 
     def _create_benchmark_records(self, infomodel, export_template):
         malicious_count = int(self.config['malicious_percentage'] / 10)
