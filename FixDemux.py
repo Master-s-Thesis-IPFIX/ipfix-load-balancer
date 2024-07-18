@@ -43,8 +43,8 @@ class FixDemux:
     def setup(self):
         infomodel = pyfixbuf.InfoModel()
         pyfixbuf.cert.add_elements_to_model(infomodel)
-        infomodel.add_element(pyfixbuf.InfoElement('dnsName', 420, 2, type=pyfixbuf.DataType.STRING))
-        infomodel.add_element(pyfixbuf.InfoElement('dnsType', 420, 3, type=pyfixbuf.DataType.UINT8))
+        infomodel.add_element(pyfixbuf.InfoElement('dnsName', 420, 1, type=pyfixbuf.DataType.STRING))
+        infomodel.add_element(pyfixbuf.InfoElement('dnsType', 420, 2, type=pyfixbuf.DataType.UINT8))
         import_template = pyfixbuf.Template(infomodel)
         import_template.add_spec_list(self._import_elements)
         export_template = pyfixbuf.Template(infomodel)
