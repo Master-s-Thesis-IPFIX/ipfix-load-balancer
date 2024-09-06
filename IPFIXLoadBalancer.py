@@ -12,7 +12,7 @@ from FixSender import FixSender
 from helper import Config
 
 
-class FixDemux:
+class IPFIXLoadBalancer:
     def __init__(self, import_elements: list, export_elements: list, config: Config):
         self._import_elements: list = import_elements
         self._export_elements: list = export_elements
@@ -58,12 +58,12 @@ class FixDemux:
             self._receiver = FixReceiver(infomodel, import_template, self.config)
             self._receiver.setup()
         for i in range(0, self.config['malfix_instances']):
-            malfix = FixSender(infomodel, export_template, self.config['malfix_base_port'] + i, self.config)
-            malfix.setup()
-            malfix.export_templates()
-            self._sender.append(malfix)
+            ipfix_sender = FixSender(infomodel, export_template, self.config['malfix_base_port'] + i, self.config)
+            ipfix_sender.setup()
+            ipfix_sender.export_templates()
+            self._sender.append(ipfix_sender)
 
-    def _demux(self, record: pyfixbuf.Record):
+    def _balance(self, record: pyfixbuf.Record):
         self._sender[self._current_sender].send_ipfix(record)
         self._current_sender = (self._current_sender + 1) % len(self._sender)
 
@@ -80,11 +80,11 @@ class FixDemux:
             self._last_report_time = current_time
 
     def run(self):
-        self._receiver.listen(self._demux)
+        self._receiver.listen(self._balance)
 
     def run_benchmark(self):
         while True:
-            self._demux(random.choice(self._benchmark_records))
+            self._balance(random.choice(self._benchmark_records))
             if (self.config['max_flows'] != 0 and
                     self._total_packet_count + self._delta_packet_count >= self.config['max_flows']):
                 [sender.emit() for sender in self._sender]

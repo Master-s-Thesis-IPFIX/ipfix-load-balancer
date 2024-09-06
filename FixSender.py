@@ -36,7 +36,10 @@ class FixSender:
             self._record.copy(record)
         else:
             self._record = record
-        self._buffer.append(record)
+        try:
+            self._buffer.append(record)
+        except Exception as e:
+            print(e)
 
     def emit(self):
         self._buffer.emit()

@@ -1,6 +1,6 @@
 import argparse
 
-from FixDemux import FixDemux
+from IPFIXLoadBalancer import IPFIXLoadBalancer
 from helper import Config
 from information_elements import export_ie, import_ie
 
@@ -52,12 +52,13 @@ if not config['minimal_log']:
     print(f"  Benchmarking: {config['benchmark']}")
     print(f"Listening on {config['listen_host']}:{config['listen_port']}/{config['listen_protocol']} for IPFIX!") if not \
         config['benchmark'] else print("Benchmarking!")
-    print(
-        f"  Bench params: Flows: {config['max_flows']}, "
-        f"malicious percentage: {config['malicious_percentage']}, "
-        f"types: {config['malicious_types']}")
+    if config['benchmark']:
+        print(
+            f"  Bench params: Flows: {config['max_flows']}, "
+            f"malicious percentage: {config['malicious_percentage']}, "
+            f"types: {config['malicious_types']}")
 
 # Initialize FixDemux with the appropriate arguments
-demux = FixDemux(import_ie, export_ie, config)
+demux = IPFIXLoadBalancer(import_ie, export_ie, config)
 demux.setup()
 demux.run_benchmark() if config['benchmark'] else demux.run()
