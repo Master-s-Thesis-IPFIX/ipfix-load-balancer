@@ -32,12 +32,12 @@ class FixSender:
         self._session.export_templates()
 
     def send_ipfix(self, record: pyfixbuf.Record):
-        if not self.config['benchmark']:
-            self._record.copy(record)
-        else:
+        if self.config['benchmark']:
             self._record = record
+        else:
+            self._record.copy(record)
         try:
-            self._buffer.append(record)
+            self._buffer.append(self._record)
         except Exception as e:
             print(e)
 
