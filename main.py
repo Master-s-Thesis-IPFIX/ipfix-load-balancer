@@ -12,7 +12,7 @@ parser.add_argument('--malfix_hostname', type=str, help='The hostname as a strin
 parser.add_argument('--malfix_base_port', type=int, help='The base port for MalFix', default="19000")
 parser.add_argument('--malfix_protocol', type=str, help='The protocol to use', default="tcp")
 parser.add_argument('--listen_host', type=str, help='The host to listen on', default="0.0.0.0")
-parser.add_argument('--listen_port', type=int, help='The port to listen on', default="1337")
+parser.add_argument('--listen_port', type=int, help='The port to listen on', default="18500")
 parser.add_argument('--listen_protocol', type=str, help='The protocol to listen on', default="tcp")
 parser.add_argument('--benchmark', action='store_true', help='Flag to enable benchmarking')
 parser.add_argument('--max_flows', type=int, help='Max flow to send', default=10000000)
