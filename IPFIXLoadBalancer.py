@@ -5,11 +5,12 @@ from typing import Optional
 
 import pyfixbuf
 import pyfixbuf.cert
+from numpy.random import choice
 
 import benchmark_data
 from FixReceiver import FixReceiver
 from FixSender import FixSender
-from helper import Config
+from helper import Config, get_random_dns_name, get_random_ipv4, get_random_ipv6
 
 
 class IPFIXLoadBalancer:
@@ -38,7 +39,6 @@ class IPFIXLoadBalancer:
             else benchmark_data.malicious_dns
             if "dns" in config['malicious_types']
             else benchmark_data.malicious_ip)
-        self._normal_benchmark_data = benchmark_data.normal
 
     def setup(self):
         infomodel = pyfixbuf.InfoModel()
@@ -107,22 +107,32 @@ class IPFIXLoadBalancer:
                 break
 
     def _create_benchmark_records(self, infomodel, export_template):
-        malicious_count = int(self.config['malicious_percentage'] / 10)
-        for i in range(0, 10):
+        malicious_count = int(self.config['malicious_percentage'] * 10_000)
+        for i in range(0, 10_000):
+            if i % 1_000 == 0:
+                print(f"Generated {(i / 10_000) * 100}% of benchmark flows.")
             self._benchmark_records.append(pyfixbuf.Record(infomodel, export_template))
             record = self._benchmark_records[i]
             info = self._malicious_benchmark_data[
-                i % len(self._malicious_benchmark_data)] if i < malicious_count else self._normal_benchmark_data[
-                (i - malicious_count) % len(self._normal_benchmark_data)]
-            if info["dnsName"]:
-                record["dnsName"] = info["dnsName"]
-                record["dnsType"] = info["dnsType"]
-            if info["sourceIPv4Address"]:
-                record["sourceIPv4Address"] = info["sourceIPv4Address"]
-                record["destinationIPv4Address"] = info["destinationIPv4Address"]
+                i % len(self._malicious_benchmark_data)] if i < malicious_count else {}
+
+            dns = False
+            if info.get("dnsName") or info.get("type") != "ip" and choice([True, False], 1,
+                                                                          p=[0.05, 0.95]):
+                record["dnsName"] = info.get("dnsName", get_random_dns_name())
+                record["dnsType"] = info.get("dnsType", random.choice([1, 28]))
+                dns = True
+            if info.get("type") == "ip" or choice([True, False], 1,
+                                                  p=[0.6, 0.4]):
+                record["sourceIPv4Address"] = info.get("sourceIPv4Address", get_random_ipv4())
+                record["destinationIPv4Address"] = info.get("destinationIPv4Address", get_random_ipv4())
+
             else:
-                record["sourceIPv6Address"] = info["sourceIPv6Address"]
-                record["destinationIPv6Address"] = info["destinationIPv6Address"]
-            record["destinationTransportPort"] = info["destinationTransportPort"]
-            record["sourceTransportPort"] = info["sourceTransportPort"]
-            record["protocolIdentifier"] = info["protocolIdentifier"]
+                record["sourceIPv6Address"] = info.get("sourceIPv6Address", get_random_ipv6())
+                record["destinationIPv6Address"] = info.get("destinationIPv6Address", get_random_ipv6())
+
+            record["sourceTransportPort"] = info.get("sourceTransportPort", random.randint(1, 65535))
+            record["destinationTransportPort"] = 53 if dns else info.get(
+                "destinationTransportPort", random.randint(1, 65535))
+            record["protocolIdentifier"] = 17 if dns else 6 if info.get("type") == "ip" else random.choice([17, 6])
+        print("Generated 100% of benchmark flows.")

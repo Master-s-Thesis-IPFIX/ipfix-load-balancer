@@ -16,7 +16,8 @@ parser.add_argument('--listen_port', type=int, help='The port to listen on', def
 parser.add_argument('--listen_protocol', type=str, help='The protocol to listen on', default="tcp")
 parser.add_argument('--benchmark', action='store_true', help='Flag to enable benchmarking')
 parser.add_argument('--max_flows', type=int, help='Max flow to send', default=10000000)
-parser.add_argument('--malicious_percentage', type=int, help='Percentage of malicious flows, only %10=0', default=50)
+parser.add_argument('--malicious_percentage', type=float, help='Percentage of malicious flows.',
+                    default=0.4)
 parser.add_argument('--malicious_types', type=lambda s: s.split(','), help='Comma-separated list of malicious flow '
                                                                            'types which should be used',
                     default=["dns", "ip"])

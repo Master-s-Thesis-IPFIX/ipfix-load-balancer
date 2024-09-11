@@ -1,3 +1,6 @@
+import random
+import socket
+import struct
 from numbers import Number
 from typing import Tuple, TypedDict
 
@@ -47,3 +50,18 @@ class Config(TypedDict):
     malicious_percentage: int
     malicious_types: list[str]
     minimal_log: bool
+
+
+def get_random_dns_name():
+    return ''.join(
+        random.choices('abcdefghijklmnopqrstuvwxyz0123456789', k=random.randint(1, 20))) + random.choice(
+        ['.com.', '.net.', '.org.', '.io.', '.dev.'])
+
+
+def get_random_ipv4():
+    return socket.inet_ntoa(
+        struct.pack('>I', random.randint(1, 0xffffffff)))
+
+
+def get_random_ipv6():
+    return ':'.join(f'{random.randint(0, 0xffff):x}' for _ in range(8))
