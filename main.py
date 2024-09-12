@@ -15,7 +15,8 @@ parser.add_argument('--listen_host', type=str, help='The host to listen on', def
 parser.add_argument('--listen_port', type=int, help='The port to listen on', default="18500")
 parser.add_argument('--listen_protocol', type=str, help='The protocol to listen on', default="tcp")
 parser.add_argument('--benchmark', action='store_true', help='Flag to enable benchmarking')
-parser.add_argument('--max_flows', type=int, help='Max flow to send', default=10000000)
+parser.add_argument('--max_flows', type=int, help='Max flow to send', default=0)
+parser.add_argument('--duration', type=float, help='Bench duration in mins', default=0)
 parser.add_argument('--malicious_percentage', type=float, help='Percentage of malicious flows.',
                     default=0.01)
 parser.add_argument('--dns_percentage', type=float, help='Percentage of normal DNS flows.',
@@ -39,6 +40,7 @@ config: Config = {
     'listen_protocol': args.listen_protocol,
     'benchmark': args.benchmark,
     'max_flows': args.max_flows,
+    'duration': args.duration,
     'malicious_percentage': args.malicious_percentage,
     'dns_percentage': args.dns_percentage,
     'malicious_types': args.malicious_types,
@@ -61,6 +63,7 @@ if not config['minimal_log']:
             f"  Bench params: Flows: {config['max_flows']}, "
             f"malicious percentage: {config['malicious_percentage']}, "
             f"dns percentage: {config['dns_percentage']}, "
+            f"duration: {config['duration']}min , "
             f"types: {config['malicious_types']}")
 
 # Initialize FixDemux with the appropriate arguments

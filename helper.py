@@ -51,6 +51,7 @@ class Config(TypedDict):
     dns_percentage: float
     malicious_types: list[str]
     minimal_log: bool
+    duration: float
 
 
 def get_random_dns_name():

@@ -84,12 +84,13 @@ class IPFIXLoadBalancer:
         self._receiver.listen(self._balance)
 
     def run_benchmark(self):
+        start_time = time.time()
         while True:
             self._balance(random.choice(self._benchmark_records))
             if (self.config['max_flows'] != 0 and
-                    self._total_packet_count + self._delta_packet_count >= self.config['max_flows']):
+                    self._total_packet_count + self._delta_packet_count >= self.config['max_flows'] or self.config[
+                        'duration'] != 0 and time.time() - start_time >= self.config['duration'] * 60):
                 [sender.emit() for sender in self._sender]
-
                 if self.config['minimal_log']:
                     print(
                         f"Flows: {self.config['max_flows']}, "
