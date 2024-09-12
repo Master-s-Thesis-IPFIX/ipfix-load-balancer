@@ -17,9 +17,9 @@ parser.add_argument('--listen_protocol', type=str, help='The protocol to listen 
 parser.add_argument('--benchmark', action='store_true', help='Flag to enable benchmarking')
 parser.add_argument('--max_flows', type=int, help='Max flow to send', default=10000000)
 parser.add_argument('--malicious_percentage', type=float, help='Percentage of malicious flows.',
-                    default=0.4)
+                    default=0.01)
 parser.add_argument('--dns_percentage', type=float, help='Percentage of normal DNS flows.',
-                    default=0.05)
+                    default=0.01)
 parser.add_argument('--malicious_types', type=lambda s: s.split(','), help='Comma-separated list of malicious flow '
                                                                            'types which should be used',
                     default=["dns", "ip"])
