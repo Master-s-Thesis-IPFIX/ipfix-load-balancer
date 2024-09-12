@@ -18,6 +18,8 @@ parser.add_argument('--benchmark', action='store_true', help='Flag to enable ben
 parser.add_argument('--max_flows', type=int, help='Max flow to send', default=10000000)
 parser.add_argument('--malicious_percentage', type=float, help='Percentage of malicious flows.',
                     default=0.4)
+parser.add_argument('--dns_percentage', type=float, help='Percentage of normal DNS flows.',
+                    default=0.05)
 parser.add_argument('--malicious_types', type=lambda s: s.split(','), help='Comma-separated list of malicious flow '
                                                                            'types which should be used',
                     default=["dns", "ip"])
@@ -38,6 +40,7 @@ config: Config = {
     'benchmark': args.benchmark,
     'max_flows': args.max_flows,
     'malicious_percentage': args.malicious_percentage,
+    'dns_percentage': args.dns_percentage,
     'malicious_types': args.malicious_types,
     'minimal_log': args.minimal_log
 }
@@ -57,6 +60,7 @@ if not config['minimal_log']:
         print(
             f"  Bench params: Flows: {config['max_flows']}, "
             f"malicious percentage: {config['malicious_percentage']}, "
+            f"dns percentage: {config['dns_percentage']}, "
             f"types: {config['malicious_types']}")
 
 # Initialize FixDemux with the appropriate arguments

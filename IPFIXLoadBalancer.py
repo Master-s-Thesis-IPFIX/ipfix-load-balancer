@@ -119,7 +119,8 @@ class IPFIXLoadBalancer:
 
             dns = False
             if info.get("dnsName") or info.get("type") != "ip" and choice([True, False], 1,
-                                                                          p=[0.05, 0.95]):
+                                                                          p=[self.config["dns_percentage"],
+                                                                             1 - self.config["dns_percentage"]]):
                 record["dnsName"] = info.get("dnsName", random_dns[str(random.randint(0, len(random_dns) - 1))])
                 record["dnsType"] = info.get("dnsType", random.choice([1, 28]))
                 dns = True

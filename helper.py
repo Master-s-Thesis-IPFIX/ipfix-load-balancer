@@ -47,7 +47,8 @@ class Config(TypedDict):
     listen_protocol: str
     benchmark: bool
     max_flows: int
-    malicious_percentage: int
+    malicious_percentage: float
+    dns_percentage: float
     malicious_types: list[str]
     minimal_log: bool
 
