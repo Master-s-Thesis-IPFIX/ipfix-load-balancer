@@ -10,7 +10,8 @@ from numpy.random import choice
 import benchmark_data
 from FixReceiver import FixReceiver
 from FixSender import FixSender
-from helper import Config, get_random_dns_name, get_random_ipv4, get_random_ipv6
+from helper import Config, get_random_ipv4, get_random_ipv6
+from random_dns_dict import random_dns
 
 
 class IPFIXLoadBalancer:
@@ -119,7 +120,7 @@ class IPFIXLoadBalancer:
             dns = False
             if info.get("dnsName") or info.get("type") != "ip" and choice([True, False], 1,
                                                                           p=[0.05, 0.95]):
-                record["dnsName"] = info.get("dnsName", get_random_dns_name())
+                record["dnsName"] = info.get("dnsName", random_dns[str(random.randint(0, len(random_dns) - 1))])
                 record["dnsType"] = info.get("dnsType", random.choice([1, 28]))
                 dns = True
             if info.get("type") == "ip" or choice([True, False], 1,
