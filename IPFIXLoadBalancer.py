@@ -112,7 +112,8 @@ class IPFIXLoadBalancer:
         malicious_count = int(self.config['malicious_percentage'] * 10_000)
         for i in range(0, 10_000):
             if i % 1_000 == 0:
-                print(f"Generated {(i / 10_000) * 100}% of benchmark flows.")
+                if not self.config['minimal_log']:
+                    print(f"Generated {(i / 10_000) * 100}% of benchmark flows.")
             self._benchmark_records.append(pyfixbuf.Record(infomodel, export_template))
             record = self._benchmark_records[i]
             info = self._malicious_benchmark_data[
@@ -138,4 +139,5 @@ class IPFIXLoadBalancer:
             record["destinationTransportPort"] = 53 if dns else info.get(
                 "destinationTransportPort", random.randint(1, 65535))
             record["protocolIdentifier"] = 17 if dns else 6 if info.get("type") == "ip" else random.choice([17, 6])
-        print("Generated 100% of benchmark flows.")
+        if not self.config['minimal_log']:
+            print("Generated 100% of benchmark flows.")
